@@ -10,22 +10,25 @@
               <span>警种</span>
               <i class="arrow"></i>
               <ul>
+                <li @click="choosePolice()">全部</li>
                 <li
                   v-for="(item,idx) in policeRecords"
                   :key="idx"
                   @click="choosePolice(item.lxmc)"
-                >{{item.lxmc}}</li>
+                >{{item.lxmc.length>6?item.lxmc.slice(0,6)+"...":item.lxmc}}</li>
               </ul>
             </div>
             <div class="service" @click="dropDown2" @mouseleave="clear2" ref="navi2">
               <span>服务</span>
               <i class="arrow"></i>
               <ul>
+                <li @click="choosePolice()">全部</li>
                 <li
                   v-for="(item,idx) in serviceRecords"
                   :key="idx"
-                  @click="choosePolice(item.appName)"
-                >{{item.appName}}</li>
+                  :title="item.serviceName"
+                  @click="chooseAppService(item.serviceName)"
+                >{{item.serviceName.length>6?item.serviceName.slice(0,6)+"...":item.serviceName}}</li>
               </ul>
             </div>
             <div class="timeRange">
@@ -39,7 +42,13 @@
                 ></Date-picker>
               </i-col>
             </div>
-            <div class="serach">
+            <div
+              class="serach"
+              @mousedown="dropDown3"
+              @mouseup="clear3"
+              @click="checkout"
+              ref="searchBtn"
+            >
               <span>查询</span>
             </div>
             <div class="operateBox">
@@ -114,7 +123,8 @@ export default {
           align: "center"
         }
       ],
-      data: []
+      data: [],
+      searchDate: []
     };
   },
   computed: {},
@@ -136,6 +146,11 @@ export default {
       parentDOM.style.backgroundColor = "#3DAEFC";
       parentDOM.children[2].style.display = "block";
     },
+    dropDown3(e) {
+      var parentDOM = this.$refs.searchBtn;
+      parentDOM.children[0].style.backgroundImage =
+        "linear-gradient(0deg, #3DAEFC  0%, #3DAEFC  100%)";
+    },
     //清除样式
     clear() {
       var parentDOM = this.$refs.navi1;
@@ -146,6 +161,11 @@ export default {
       var parentDOM = this.$refs.navi2;
       parentDOM.style.backgroundColor = "transparent";
       parentDOM.children[2].style.display = "none";
+    },
+    clear3() {
+      var parentDOM = this.$refs.searchBtn;
+      parentDOM.children[0].style.backgroundImage =
+        "linear-gradient(0deg, #1771af 0%, #3daefc 100%)";
     },
     //调用接口
     //服务类别
@@ -188,7 +208,14 @@ export default {
       });
     },
     //表格数据
-    getData(policeType = null, serviceName = null, page = 1, pageSize = 10) {
+    getData(
+      policeType = null,
+      serviceName = null,
+      startTime = null,
+      endTime = null,
+      page = 1,
+      pageSize = 10
+    ) {
       var url = this.$config.baseUrl.dev;
       this.curPage = 1;
       this.$axios
@@ -197,7 +224,9 @@ export default {
             page,
             pageSize,
             policeType,
-            serviceName
+            serviceName,
+            startTime,
+            endTime
           }
         })
         .then(res => {
@@ -207,10 +236,10 @@ export default {
           if (status === 1) {
             this.responseTotal = data.total;
             this.data = data.records.map((item, idx) => {
-              if(item.serviceStatus==="normal"){
-                var serviceStatus = "正常"
-              }else if(item.serviceStatus==="exception"){
-                var serviceStatus = "故障"
+              if (item.serviceStatus === "normal") {
+                var serviceStatus = "正常";
+              } else if (item.serviceStatus === "exception") {
+                var serviceStatus = "故障";
               }
               return {
                 number: idx,
@@ -231,18 +260,22 @@ export default {
           }
         });
     },
-    chooseAppService(appName) {
-      this.curappName = appName;
+    chooseAppService(serviceName) {
+      this.curappName = serviceName;
       // console.log(this.curappName);
-      this.getData(this.curlxmc, this.curappName);
+      this.getData(null, this.curappName);
     },
     choosePolice(lxmc) {
       this.curlxmc = lxmc;
-      this.getData(this.curlxmc, this.curappName);
+      this.getData(this.curlxmc);
     },
     //日期变化函数
     dayin(value) {
-      console.log(value);
+      this.searchDate = value;
+    },
+    checkout() {
+      console.log(this.searchDate)
+      this.getData(null, null,this.searchDate[0]+" 00:00:00",this.searchDate[1]+" 00:00:00");
     }
   },
   mounted() {
@@ -313,6 +346,11 @@ export default {
           &:hover {
             background-color: #3daefc;
           }
+        }
+      }
+      &:hover {
+        span {
+          color: #fff;
         }
       }
     }

@@ -598,6 +598,7 @@ export default {
     //改变列表样式
     addClass(idx) {
       this.curOperate = idx;
+      this.curPage = 1;
       if (idx === 0) {
         this.getSmallData({
           dataType: this.curdataType,
@@ -928,140 +929,6 @@ export default {
           this.getyxData({ city: data[0].sz, pageSize: 10 });
         }
       });
-
-      // this.$axios
-      //   .get(url + "/plat/" + type, {
-      //     params: {
-      //       city,
-      //       dataType,
-      //       page,
-      //       pageSize
-      //     }
-      //   })
-      //   .then(res => {
-      //     let {
-      //       data: { data, status }
-      //     } = res;
-      //     if (status === 1) {
-      //       // console.log(data);
-      //       // this.columns3 = [{{
-      //       //   title: "序号",
-      //       //   key: "number",
-      //       //   align: "center"
-      //       // },}]
-      //       if (dataType === 1) {
-      //         this.data1 = data.records.map(
-      //           (
-      //             {
-      //               cityName,
-      //               scale,
-      //               dataSourece,
-      //               access,
-      //               lastUpdateTime,
-      //               mapLevel,
-      //               dataVolume,
-      //               coverage,
-      //               coverageMode
-      //             },
-      //             idx
-      //           ) => {
-      //             return {
-      //               number: 1,
-      //               cityName,
-      //               scale,
-      //               dataSourece,
-      //               access,
-      //               lastUpdateTime,
-      //               mapLevel,
-      //               layerNumber: 4852323,
-      //               primCounts: 18,
-      //               dataVolume,
-      //               coverage,
-      //               coverageMode,
-      //               cellClassName: {
-      //                 age: "demo-table-info-cell-age",
-      //                 address: "demo-table-info-cell-address"
-      //               }
-      //             };
-      //           }
-      //         );
-      //       }
-      //       if (dataType === 2 || dataType === 3) {
-      //         this.data2 = data.records.map(
-      //           (
-      //             {
-      //               cityName,
-      //               scale,
-      //               dataSourece,
-      //               access,
-      //               lastUpdateTime,
-      //               mapLevel,
-      //               dataVolume,
-      //               coverage,
-      //               coverageMode
-      //             },
-      //             idx
-      //           ) => {
-      //             return {
-      //               number: 1,
-      //               cityName,
-      //               dpi: "0.6米",
-      //               dataTypes: "航片",
-      //               dataSourece,
-      //               access,
-      //               dataVolume,
-      //               coverage,
-      //               lastUpdateTime,
-      //               mapLevel,
-      //               coverageMode,
-      //               scale,
-      //               cellClassName: {
-      //                 age: "demo-table-info-cell-age",
-      //                 address: "demo-table-info-cell-address"
-      //               }
-      //             };
-      //           }
-      //         );
-      //       }
-      //       if (dataType === 3) {
-      //         this.data4 = data.records.map(
-      //           (
-      //             {
-      //               cityName,
-      //               scale,
-      //               dataSourece,
-      //               access,
-      //               lastUpdateTime,
-      //               mapLevel,
-      //               dataVolume,
-      //               coverage,
-      //               coverageMode
-      //             },
-      //             idx
-      //           ) => {
-      //             return {
-      //               number: 1,
-      //               cityName,
-      //               dpi: "0.6米",
-      //               dataTypes: "航片",
-      //               dataSourece,
-      //               access,
-      //               dataVolume,
-      //               coverage,
-      //               lastUpdateTime,
-      //               mapLevel,
-      //               coverageMode,
-      //               scale,
-      //               cellClassName: {
-      //                 age: "demo-table-info-cell-age",
-      //                 address: "demo-table-info-cell-address"
-      //               }
-      //             };
-      //           }
-      //         );
-      //       }
-      //     }
-      //   });
     },
     //调用地图小类接口
     //矢量
@@ -1698,6 +1565,7 @@ export default {
       });
     },
     changePage(value) {
+      this.curPage = value;
       this.getSmallData({
         dataType: this.curdataType,
         name: this.inputVal,
@@ -1758,60 +1626,6 @@ export default {
         });
       }
     }
-    // handel(event, idx, type, pages, curPage, loadingStatus, ele) {
-    //   event.cancelBubble = true;
-    //   var scrollTop = event.target.scrollTop;
-    //   var clientHeight = event.target.clientHeight;
-    //   var scrollHeight = event.target.scrollHeight;
-    //   if (
-    //     scrollHeight == scrollTop + clientHeight &&
-    //     loadingStatus == true &&
-    //     (curPage < pages || curPage == pages)
-    //   ) {
-    //     loadingStatus = false;
-    //     curPage = curPage + 1;
-    //     var childEle = document.createElement("TR");
-    //     childEle.innerHTML = `<div><div class="ivu-spin ivu-spin-default"><div class="ivu-spin-main"><span class="ivu-spin-dot"></span> <div class="ivu-spin-text"></div></div></div>加载中...`;
-    //     childEle.style.color = "#fff";
-    //     childEle.style.textAlign = "center";
-    //     childEle.style.width = "1016px";
-    //     childEle.style.lineHeight = "30px";
-    //     childEle.style.height = "30px";
-    //     childEle.style.display = "inline-block";
-    //     ele.append(childEle);
-    //     // ele.innerHTML = (`<tr><Spin fix>加载中</Spin></tr>`)
-    //     setTimeout(() => {
-    //       this.getMapSmallData({
-    //         city: this.sz,
-    //         eventType: "scroll",
-    //         type,
-    //         page: curPage
-    //       });
-    //       // var el =
-    //       ele.removeChild(childEle);
-    //     }, 2000);
-    //   }
-    // },
-    //   dlmoreload(idx, type, pages, curPage, loadingStatus) {
-    //     // ele.removeEventListener("scroll", function rr(event){self.handel(event,idx, type, pages, curPage,loadingStatus,ele)});
-
-    //     //第一次请求20条数据,当请求数据大于10条时,出现滚动条,滚动到底部在请求一次,有数据则推到表格后面,没数据时出现提示框或其他,看看是否能价格加载过度动画
-    //     var ele = document.getElementsByClassName("ivu-table-body")[idx];
-    //     var self = this;
-    //     ele.addEventListener("scroll", function rr(event) {
-    //       self.handel(event, idx, type, pages, curPage, loadingStatus, ele);
-    //     });
-    //     ele.addEventListener("mousewheel", event => {
-    //       event = event || window.event;
-    //       document.getElementsByClassName("ivu-table-body")[idx].scrollTop +=
-    //         event.wheelDelta > 0 ? -60 : 60;
-    //       return false;
-    //     });
-    //     var firefox = navigator.userAgent.indexOf("Firefox") != -1;
-    //     firefox
-    //       ? ele.addEventListener("DOMMouseScroll", this.jj, false)
-    //       : (ele.onmousewheel = this.jj);
-    //   }
   },
   created() {},
   computed: {

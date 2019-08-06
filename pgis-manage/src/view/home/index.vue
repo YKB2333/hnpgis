@@ -11,7 +11,7 @@
               <ul>
                 <li v-for="(item,idx) in assessList">
                   <span :class="[true?'c'+(idx+1):false]">0{{idx+1}}</span>
-                  <span>{{item.name}}</span>
+                  <span :title="item.name">{{item.name.length>5?item.name.slice(0,5)+"...":item.name}}</span>
                   <span class="fr">{{item.count}}</span>
                   <i
                     class="iconfont iconjinxunzhang"
@@ -34,7 +34,7 @@
                 </div>
                 <div>
                   <span>{{res_ser[0].type}}(单位:{{this.layerTypeUnit}})</span>
-                  <span>{{res_ser[0].num}}(单位:{{res_ser[0].unit}})</span>
+                  <span class="u2">{{res_ser[0].num}}(单位:{{res_ser[0].unit}})</span>
                 </div>
               </div>
               <div class="f1">
@@ -48,7 +48,7 @@
                 </div>
                 <div>
                   <span>{{res_ser[1].type}}(单位:{{this.serviceTypeUnit}})</span>
-                  <span>{{res_ser[1].num}}(单位:{{res_ser[1].unit}})</span>
+                  <span class="u2">{{res_ser[1].num}}(单位:{{res_ser[1].unit+"次"}})</span>
                 </div>
               </div>
             </div>
@@ -57,10 +57,10 @@
               <ul>
                 <li v-for="(item,idx) in visitList">
                   <span>0{{idx+1}}</span>
-                  <span :title="item.name">{{item.name.slice(0,6)+"..."}}</span>
+                  <span :title="item.name">{{item.name.length>6?item.name.slice(0,6)+"...":item.name}}</span>
                   <span
-                    :class="{c10:idx<3&&item.whether==1?true:false,c11:idx<3&&item.whether==2?true:false,c12:idx>2||item.whether==0?true:false, fr:true}"
-                  >{{item.count}}</span>
+                    :title="item.count" :class="{c10:idx<3&&item.whether==1?true:false,c11:idx<3&&item.whether==2?true:false,c12:idx>2||item.whether==0?true:false, fr:true}"
+                  >{{item.count>999?(item.count+"").slice(0,2)+"...":item.count}}</span>
                 </li>
               </ul>
             </div>
@@ -155,7 +155,7 @@ export default {
         {
           type: "服务类型",
           num: "访问次数",
-          unit: "条"
+          unit: "次"
         }
       ],
       cirColor: [
@@ -222,7 +222,7 @@ export default {
           this.serviceCount = this.split(
             this.tranNumber(data.serviceCount).num
           );
-          this.res_ser[1].unit = this.tranNumber(data.serviceCount).unit;
+          this.res_ser[1].unit = this.tranNumber(data.serviceCount).su;
 
           if (data.visitCount > 10000 && data.visitCount < 100000) {
             this.visitCount = this.split(data.visitCount / 10000);
@@ -401,7 +401,8 @@ export default {
             margin-right: 16px;
           }
           &:nth-child(2) {
-            font-size: 16px;
+            font-size: 15px;
+            font-weight: bold;
             color: #ffffff;
             // margin-right: 69px;
           }
@@ -511,6 +512,10 @@ export default {
       padding-right: 94px;
       font-size: 12px;
       color: rgba(255, 255, 255, 1);
+      &.u2{
+        padding: 0;
+        float:right;
+      }
     }
   }
   .serviceRankings {
