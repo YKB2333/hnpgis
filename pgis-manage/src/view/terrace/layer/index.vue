@@ -31,14 +31,15 @@
             <div>
               <div class="clearfix">
                 <span class="fl place">{{item.name}}</span>
-                <i class="iconfont icongongan fr"></i>
+                <!-- <i class="iconfont icongongan fr"></i> -->
               </div>
               <div class="clearfix">
                 <span class="fl num">{{item.count}}</span>
-                <span class="fr source">数据来源:{{item.origin}}</span>
+                <span :title="item.origin" class="fr source">数据来源:{{item.origin}}</span>
               </div>
             </div>
           </li>
+          <span v-if="data3.length==0" style="display:inline-block; margin:160px 500px;color:#b3bec7;">暂无数据</span>
           <!-- <li class="loading"> {{loadingText}}</li> -->
         </ul>
       </div>
@@ -75,10 +76,10 @@
         :row-class-name="rowClassName"
         :columns="columns3"
         :data="data3"
-        width="1034"
+        width="1114"
       ></Table>
       <div class="divide">
-        <Page :total="total" :current="curPage" simple @on-change="changePage" />
+       <Page :total="total" :current="curPage"  simple @on-change="changePage" /> <span class="fr totalNum">共<strong>{{total}}</strong>条</span>
       </div>
     </div>
   </div>
@@ -137,7 +138,6 @@ export default {
       "ivu-page-simple-pager"
     )[0].children[0];
     var beishu = (this.total / 10 + "").length;
-    console.log(beishu);
     divideInput.style.width = 30 + 3 * beishu + "px";
   }
 };
@@ -145,7 +145,7 @@ export default {
 <style lang="less" scoped>
 .gridShow {
   // position: relative;
-  width: 1073px;
+  width: 1122px;
   // height: 550px;
   // overflow: hidden;
   margin-top: 20px;
@@ -158,9 +158,9 @@ export default {
   }
   li {
     float: left;
-    width: 240px;
+    width: 258px;
     height: 166px;
-    margin: 0 11px 20px 11px;
+    margin: 0 0px 20px 20px;
     border: 1px solid #3daefc;
     background-color: rgba(255, 255, 255, 0.1);
     box-shadow: 0px 0px 6px 0px rgba(116, 241, 255, 0.85);
@@ -220,16 +220,16 @@ export default {
 #drag {
   position: absolute;
   display: inline-block;
-  width: 4px;
-  height: 550px;
+  width: 8px;
+  height: 496px;
   box-sizing: content-box;
   top: 126px;
-  right: 12px;
+  right: 44px;
 }
 .bar {
   position: absolute;
-  width: 4px;
-  height: 20px;
+  width: 8px;
+  height: 38px;
   background: rgba(116, 241, 255, 0.85);
   border-radius: 5px;
 }
@@ -239,6 +239,15 @@ export default {
 .divide {
   width: 97.4%;
   overflow: hidden;
+}
+.totalNum{
+  display:inline-block;
+  line-height: 43px;
+  padding-right:10px;
+  color:#fff;
+  strong{
+    padding:6px;
+  }
 }
 </style>
 

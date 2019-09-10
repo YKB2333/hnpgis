@@ -15,7 +15,6 @@
               >{{item.type}}</li>
             </ul>
             <ul class="clearfix st" v-show="status.state">
-              <li>数据来源</li>
               <li
                 v-for="(item,idx) in sourceArr[status.idx].sourceType"
                 :class="{'active':idx==curType}"
@@ -24,9 +23,8 @@
               >{{item.name}}</li>
             </ul>
             <ul class="clearfix st" v-if="curSource===6">
-              <li>市州</li>
               <li
-                v-for="(item,idx) in sourceArr[5].sourceType"
+                v-for="(item,idx) in sourceArr[6].sourceType"
                 :class="{'active':idx==curType}"
                 @click="jump3(idx,item.sz)"
                 :key="idx"
@@ -42,12 +40,12 @@
                 @click="addClass(idx)"
                 :key="idx"
               ></i>
-              <i title="下载" class="iconfont iconxiazai"></i>
+              <i title="下载" class="iconfont icon-xiazai" @click="download"></i>
             </div>
-            <div class="operateBox">
-              <i class="iconfont iconxiazai" title="下载"></i>
+            <div class="operateBox" v-if="curSource==6">
+              <i class="iconfont icon-xiazai" title="下载" @click="downloadMapData"></i>
             </div>
-            <i class="iconfont iconsousuo" v-if="curSource!=6"></i>
+            <i class="iconfont icon-sousuo" v-if="curSource!=6"></i>
             <input
               type="search"
               class="searchBox"
@@ -76,8 +74,8 @@
                     :row-class-name="rowClassName"
                     :columns="columns1"
                     :data="data1"
-                    width="1034"
-                    :height="data5Height"
+                    width="1114"
+                    :height="data5Height1"
                   ></Table>
                   <!-- </Scroll> -->
                   <!-- :height="180" 高度要自适应-->
@@ -90,8 +88,8 @@
                     :row-class-name="rowClassName"
                     :columns="columns2"
                     :data="data2"
-                    width="1034"
-                    :height="data5Height"
+                    width="1114"
+                    :height="data5Height2"
                   ></Table>
                 </div>
                 <h3>3.矢影数据</h3>
@@ -101,8 +99,8 @@
                     :row-class-name="rowClassName"
                     :columns="columns4"
                     :data="data4"
-                    width="1034"
-                    :height="data5Height"
+                    width="1114"
+                    :height="data5Height3"
                   ></Table>
                 </div>
               </div>
@@ -140,7 +138,7 @@ import Layer from "./layer/index.vue";
 import { setTimeout } from "timers";
 var config = {
   pageSize: 10, //列表数据每页几条
-  ps: 44 //图格数据每页几条
+  ps: 20 //图格数据每页几条
 };
 export default {
   components: {
@@ -164,7 +162,7 @@ export default {
           ]
         },
         {
-          lxid: 6,
+          lxid: 7,
           type: "地图数据",
           sourceType: [
             {
@@ -177,11 +175,11 @@ export default {
       operateArr: [
         {
           title: "列表展示",
-          type: "iconliebiaozhanshi"
+          type: "icon-liebiaozhanshi"
         },
         {
           title: "图格展示",
-          type: "icontubiaozhanshi"
+          type: "icon-tubiaozhanshi"
         }
       ],
       scrollStatus: false,
@@ -496,12 +494,12 @@ export default {
           align: "center"
         },
         {
-          title: "图层数",
+          title: "图层数据量",
           key: "count",
           align: "center"
         },
         {
-          title: "来源",
+          title: "分类",
           key: "origin",
           align: "center"
         },
@@ -520,6 +518,7 @@ export default {
     jump(idx, dataType) {
       this.curSource = idx;
       this.curPage = 1;
+      // this.data3 = []; //跳转定位设备时数据没有清空bug
       this.curdataType = dataType;
       //重置curPage
       this.curPage = 1;
@@ -540,30 +539,22 @@ export default {
         this.status.idx = idx;
         this.status.state = true;
         this.curType = 0;
-        //   setTimeout(() => {
-        //   this.data3Height = this.getBoxHeight("tb", 3,520);
-        // }, 30);
         return;
       } else if (this.curSource == 6) {
         this.initScroll2();
         this.removeElement();
         this.getslData({
-          city: this.sourceArr[5].sourceType[0].sz,
+          city: this.sourceArr[6].sourceType[0].sz,
           pageSize: 10
         });
         this.getsyData({
-          city: this.sourceArr[5].sourceType[0].sz,
+          city: this.sourceArr[6].sourceType[0].sz,
           pageSize: 10
         });
         this.getyxData({
-          city: this.sourceArr[5].sourceType[0].sz,
+          city: this.sourceArr[6].sourceType[0].sz,
           pageSize: 10
         });
-        // setTimeout(() => {
-        //   this.data1Height = this.getBoxHeight("tb", 0, 280);
-        //   this.data2Height = this.getBoxHeight("tb", 1, 280);
-        //   this.data4Height = this.getBoxHeight("tb", 2, 280);
-        // }, 30);
       }
       this.status.idx = idx;
       this.status.state = false;
@@ -719,7 +710,6 @@ export default {
       } else if (t >= drag.offsetHeight - hezi.offsetHeight) {
         t = drag.offsetHeight - hezi.offsetHeight;
       }
-
       var bilv = t / (drag.offsetHeight - hezi.offsetHeight);
       con.style.top = -bilv * (con.offsetHeight - news.offsetHeight) + "px";
       hezi.style.top = t + "px";
@@ -777,6 +767,7 @@ export default {
 
           if (status === 1) {
             this.sourceArr = [];
+            console.log(data);
             data.map((item, idx) => {
               var arr = {
                 lxid: item.lxid,
@@ -789,14 +780,15 @@ export default {
                   }
                 ]
               };
-              for (var i = 0; i < item.children.length; i++) {
+              for (let i = 0; i < item.children.length; i++) {
                 // arr.sourceType.push(item.children[i]);
                 arr.sourceType.push(item.children[i]);
               }
+              console.log(arr);
               this.sourceArr.push(arr);
             });
             this.sourceArr.push({
-              lxid: 6,
+              lxid: 7,
               type: "地图数据",
               sourceType: [
                 {
@@ -805,6 +797,7 @@ export default {
                 }
               ]
             });
+            console.log(this.sourceArr);
             this.getMapData();
           }
         });
@@ -856,7 +849,7 @@ export default {
                   count = item.tcs;
                 }
                 return {
-                  number: item.lxid,
+                  number: item.rownum,
                   name: item.lxmc,
                   origin: item.flxmc,
                   count,
@@ -886,7 +879,7 @@ export default {
                   count = item.tcs;
                 }
                 this.data3.push({
-                  number: item.lxid,
+                  number: item.rownum,
                   name: item.lxmc,
                   origin: item.flxmc,
                   count,
@@ -900,15 +893,6 @@ export default {
             }
 
             this.pages = data.pages;
-
-            // console.log(this.data3);
-            //表格高度,如果数据大于10条,显示滚动条
-            // if (data.records.length == 10) {
-            //   // console.log(data.records.length);
-            //   this.data3Height == 400;
-            //   // console.log(this.data3Height);
-            //   this.$forceUpdate();
-            // }
           }
         });
     },
@@ -921,8 +905,8 @@ export default {
           data: { data, status }
         } = res;
         if (status === 1) {
-          this.sourceArr[5].sourceType = data;
-          // console.log(data[0].sz);
+          this.sourceArr[6].sourceType = data;
+          // console.log(this.sourceArr[6]);
           // this.getMapSmallData(); //矢量
           this.getslData({ city: data[0].sz, pageSize: 10 });
           this.getsyData({ city: data[0].sz, pageSize: 10 });
@@ -959,9 +943,12 @@ export default {
               this.slcurPage = data.current;
               // console.log(this.data1Pages,data.pages,this.slcurPage)
               this.data1 = data.records.map(
-                ({ szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl }, idx) => {
+                (
+                  { szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl, rownum },
+                  idx
+                ) => {
                   return {
-                    number: 1,
+                    number: rownum,
                     cityName: szmc,
                     scale: blc,
                     dataSourece: ly,
@@ -993,11 +980,11 @@ export default {
                   el.parentElement.removeChild(el);
                   data.records.map(
                     (
-                      { szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl },
+                      { szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl, rownum },
                       idx
                     ) => {
                       this.data1.push({
-                        number: 1,
+                        number: rownum,
                         cityName: 1,
                         scale: 1,
                         dataSourece: 1,
@@ -1061,9 +1048,12 @@ export default {
               this.yxcurPage = data.current;
               // console.log(this.data1Pages,data.pages,this.slcurPage)
               this.data2 = data.records.map(
-                ({ szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl }, idx) => {
+                (
+                  { szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl, rownum },
+                  idx
+                ) => {
                   return {
-                    number: 1,
+                    number: rownum,
                     cityName: szmc,
                     scale: blc,
                     dataSourece: ly,
@@ -1092,11 +1082,11 @@ export default {
                   el.parentElement.removeChild(el);
                   data.records.map(
                     (
-                      { szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl },
+                      { szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl, rownum },
                       idx
                     ) => {
                       this.data2.push({
-                        number: 1,
+                        number: rownum,
                         cityName: 1,
                         scale: 1,
                         dataSourece: 1,
@@ -1154,9 +1144,12 @@ export default {
               this.sycurPage = data.current;
               // console.log(this.data1Pages,data.pages,this.slcurPage)
               this.data4 = data.records.map(
-                ({ szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl }, idx) => {
+                (
+                  { szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl, rownum },
+                  idx
+                ) => {
                   return {
-                    number: 1,
+                    number: rownum,
                     cityName: szmc,
                     scale: blc,
                     dataSourece: ly,
@@ -1185,11 +1178,11 @@ export default {
                   el.parentElement.removeChild(el);
                   data.records.map(
                     (
-                      { szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl },
+                      { szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl, rownum },
                       idx
                     ) => {
                       this.data4.push({
-                        number: 1,
+                        number: rownum,
                         cityName: szmc,
                         scale: blc,
                         dataSourece: ly,
@@ -1255,9 +1248,12 @@ export default {
                 this.slLoadingStatus
               );
               this.data1 = data.records.map(
-                ({ szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl }, idx) => {
+                (
+                  { szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl, rownum },
+                  idx
+                ) => {
                   return {
-                    number: 1,
+                    number: rownum,
                     cityName: szmc,
                     scale: blc,
                     dataSourece: ly,
@@ -1280,33 +1276,13 @@ export default {
             if (eventType === "scroll" && type === "sl") {
               if (data.records.length > 0) {
                 this.slLoadingStatus = true;
-                // console.log(666);
-                // this.data1 = data.records.map(
-                //   ({ szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl }, idx) => {
-                //     this.data1.push({
-                //       number: 1,
-                //       cityName: szmc,
-                //       scale: blc,
-                //       dataSourece: ly,
-                //       access: hqfs,
-                //       lastUpdateTime: gxsj,
-                //       mapLevel: dj,
-                //       // layerNumber: 4852323,
-                //       // primCounts: 18,
-                //       dataVolume: sjl + "G",
-                //       coverage: fgfw,
-                //       coverageMode: fgl,
-                //       cellClassName: {
-                //         age: "demo-table-info-cell-age",
-                //         address: "demo-table-info-cell-address"
-                //       }
-                //     });
-                //   }
-                // );
                 data.records.map(
-                  ({ szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl }, idx) => {
+                  (
+                    { szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl, rownum },
+                    idx
+                  ) => {
                     this.data1.push({
-                      number: 1,
+                      number: rownum,
                       cityName: 1,
                       scale: 1,
                       dataSourece: 1,
@@ -1368,9 +1344,12 @@ export default {
               }, 2000);
 
               this.data2 = data.records.map(
-                ({ szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl }, idx) => {
+                (
+                  { szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl, rownum },
+                  idx
+                ) => {
                   return {
-                    number: 1,
+                    number: rownum,
                     cityName: szmc,
                     scale: blc,
                     dataSourece: ly,
@@ -1393,9 +1372,12 @@ export default {
             if (eventType === "scroll" && type === "yx") {
               if (data.records.length > 0) {
                 data.records.map(
-                  ({ szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl }, idx) => {
+                  (
+                    { szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl, rownum },
+                    idx
+                  ) => {
                     this.data2.push({
-                      number: 1,
+                      number: rownum,
                       cityName: 1,
                       scale: 1,
                       dataSourece: 1,
@@ -1458,9 +1440,12 @@ export default {
               }, 2000);
 
               this.data4 = data.records.map(
-                ({ szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl }, idx) => {
+                (
+                  { szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl, rownum },
+                  idx
+                ) => {
                   return {
-                    number: 1,
+                    number: rownum,
                     cityName: szmc,
                     scale: blc,
                     dataSourece: ly,
@@ -1486,9 +1471,12 @@ export default {
                 this.syLoadingStatus = true;
 
                 data.records.map(
-                  ({ szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl }, idx) => {
+                  (
+                    { szmc, blc, ly, hqfs, gxsj, dj, sjl, fgfw, fgl, rownum },
+                    idx
+                  ) => {
                     this.data4.push({
-                      number: 1,
+                      number: rownum,
                       cityName: 1,
                       scale: 1,
                       dataSourece: 1,
@@ -1541,13 +1529,85 @@ export default {
       }
       this.showGridScroll();
     },
+    //下载
+    download() {
+      //curdataType
+      var url = this.$config.baseUrl.dev;
+      url += "/plat/baseData/type/export";
+      var fileName = `平台资源-${this.sourceArr[this.curSource].type}-${this.sourceArr[this.curSource].sourceType[this.curType].name}`;
+      if (this.inputVal.length > 0) {
+        var str = JSON.stringify({
+          dataType: this.curdataType,
+          name: this.inputVal
+        });
+      } else {
+        var str = JSON.stringify({
+          dataType: this.curdataType
+        });
+      }
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", url, true); // 也可以使用POST方式，根据接口
+      xhr.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+      xhr.responseType = "blob"; // 返回类型blob
+      // 定义请求完成的处理函数，请求前也可以增加加载框/禁用下载按钮逻辑
+      xhr.onload = function() {
+        // 请求完成
+        if (this.status === 200) {
+          // 返回200
+          var blob = this.response;
+          var reader = new FileReader();
+          reader.readAsDataURL(blob); // 转换为base64，可以直接放入a的href
+          reader.onload = function(e) {
+            // 转换完成，创建一个a标签用于下载
+            var a = document.createElement("a");
+            a.download = `${fileName}.xlsx`;
+            a.href = e.target.result;
+            a.click();
+          };
+        }
+      };
+      // 发送ajax请求
+      xhr.send(str);
+    },
+    //下载地图数据
+    downloadMapData() {
+      var url = this.$config.baseUrl.dev;
+      var fileName = `平台资源-${this.sourceArr[this.curSource].type}-${this.sourceArr[this.curSource].sourceType[this.curType].szmc}`;
+      url += "/plat/map/export";
+      var str = JSON.stringify({
+        city: this.sz
+      });
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", url, true); // 也可以使用POST方式，根据接口
+      xhr.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+      xhr.responseType = "blob"; // 返回类型blob
+      // 定义请求完成的处理函数，请求前也可以增加加载框/禁用下载按钮逻辑
+      xhr.onload = function() {
+        // 请求完成
+        if (this.status === 200) {
+          // 返回200
+          var blob = this.response;
+          var reader = new FileReader();
+          reader.readAsDataURL(blob); // 转换为base64，可以直接放入a的href
+          reader.onload = function(e) {
+            // 转换完成，创建一个a标签用于下载
+            var a = document.createElement("a");
+            a.download = `${fileName}.xlsx`;
+            a.href = e.target.result;
+            a.click();
+          };
+        }
+      };
+      // 发送ajax请求
+      xhr.send(str);
+    },
     //滚动加载
     moreLoad() {
       // var
       return new Promise(resolve => {
         this.curPage = this.curPage + 1;
         console.log(this.curPage, this.pages);
-        if (this.curPage < this.pages) {
+        if (this.curPage < this.pages||this.curPage == this.pages) {
           setTimeout(() => {
             this.getSmallData({
               dataType: this.curdataType,
@@ -1619,7 +1679,7 @@ export default {
 
       //清除加载行
       var loadEle = document.getElementsByClassName("loading");
-      console.log(loadEle)
+      console.log(loadEle);
       if (loadEle.length > 0) {
         [].map.call(loadEle, item => {
           item.parentElement.removeChild(item);
@@ -1630,10 +1690,28 @@ export default {
   created() {},
   computed: {
     //用computed监听data的变化,返回不同的值,做到props传递不同值使表格高度自适应变化
-    data5Height() {
-      if (this.data1.length > 1) {
-        return 180;
-        // return 520;
+    //地图数据图表的高度
+    //矢量
+    data5Height1() {
+      if (this.data1.length > 4) {
+        return 280;
+      } else {
+        return 0;
+      }
+    },
+    //影像
+    data5Height2() {
+      if (this.data2.length > 4) {
+        return 280;
+      } else {
+        return 0;
+      }
+    },
+    //矢影
+    data5Height3() {
+      if (this.data4.length > 4) {
+        console.log(this.data4.length);
+        return 280;
       } else {
         return 0;
       }
@@ -1700,7 +1778,7 @@ export default {
       ) {
         var tr = self.createElement();
         self.yxLoadingStatus = false;
-        ele2.append(tr); 
+        ele2.append(tr);
         if (self.yxcurPage < self.data2Pages) {
           self.getyxData({
             city: self.sz,
@@ -1767,25 +1845,48 @@ export default {
     firefox
       ? ele4.addEventListener("DOMMouseScroll", this.jj, false)
       : (ele4.onmousewheel = this.jj);
-  }
+  },
+  // beforeRouteEnter(to, from, next) {
+  //   function getCookie(key) {
+  //     var str = document.cookie;
+  //     var arr = str.split("; ");
+  //     for (var i = 0; i < arr.length; i++) {
+  //       var arr2 = arr[i].split("=");
+  //       if (key == arr2[0]) {
+  //         return arr2[1];
+  //       }
+  //     }
+  //   }
+  //   // console.log(getCookie("user"));
+  //   if (getCookie("user")) {
+  //     next();
+  //   } else {
+  //     // console.log("loading");
+  //     window.location.href = "http://www.pgis.hn/pgismap/login.html";
+  //   }
+  // },
 };
 </script>
+
 <style scoped lang="less">
+
 #dataBox {
   position: relative;
   .nav {
     position: relative;
-    width: 1073px;
+    width: 1156px;
     min-height: 80px;
     background: url("../../assets/images/hnimages/layerNav.png") no-repeat;
     background-size: 98% 100%;
     ul {
+      width: 830px;
       font-size: 14px;
       color: #c0e5ff;
       padding: 28px 0 0 20px;
       li {
         float: left;
         margin-right: 16px;
+        margin-bottom: 10px;
         padding: 0 10px;
         cursor: pointer;
         &.active {
@@ -1795,7 +1896,7 @@ export default {
       }
     }
     .st {
-      padding: 10px 0 30px 20px;
+      padding: 0 0 20px 20px;
     }
 
     .operateBox,
@@ -1851,6 +1952,7 @@ export default {
     line-height: 72px;
     border-bottom: 1px solid #3daefc;
     margin: 0 2px 0 10px;
+    width: 92%;
   }
   h3 {
     margin-left: 21px;
@@ -1860,10 +1962,9 @@ export default {
   }
   .dataTableBox {
     position: relative;
-    width: 1073px;
-    height: 524px;
+    width: 1210px;
+    height: 492px;
     overflow: hidden;
-    margin-top: 20px;
     &::-webkit-scrollbar {
       display: none;
     }
@@ -1880,22 +1981,23 @@ export default {
   }
   .content2 {
     position: absolute;
+    width: 100%;
   }
   #drag,
   #drag2 {
     position: absolute;
     display: inline-block;
-    width: 4px;
-    height: 524px;
+    width: 8px;
+    height: 494px;
     box-sizing: content-box;
-    top: 126px;
-    right: 12px;
+    top: 138px;
+    right: 44px;
   }
   .bar,
   .bar2 {
     position: absolute;
-    width: 4px;
-    height: 20px;
+    width: 8px;
+    height: 38px;
     background: rgba(116, 241, 255, 0.85);
     border-radius: 5px;
   }
@@ -1917,6 +2019,11 @@ export default {
     font-size: 12px;
     color: #ffffff;
     font-weight: bold;
+  }
+  .icon-sousuo{
+        position: absolute;
+    top: 61px;
+    right: 196px;
   }
 }
 .demo-spin-icon-load {

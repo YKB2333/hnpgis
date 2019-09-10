@@ -12,6 +12,7 @@
     "core-js": "^2.6.5",
     "echarts": "^4.2.1",
     "iview": "^3.4.2",
+    "jquery": "^3.4.1",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",
     "lodash.tail": "^4.1.1",

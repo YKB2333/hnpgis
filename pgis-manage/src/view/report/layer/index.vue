@@ -29,9 +29,9 @@
         :row-class-name="rowClassName"
         :columns="columns"
         :data="data"
-        width="1034"
+        width="1114"
       ></Table>
-      <div class="divide"><Page :total="total" :current="curPage" simple @on-change="changePage" /></div>
+      <div class="divide"><Page :total="total" :current="curPage" simple @on-change="changePage" /><span class="fr totalNum">共<strong>{{total}}</strong>条</span></div>
     </div>
     <!-- :height="data1Height" -->
   </div>
@@ -48,6 +48,9 @@ export default {
   computed: {
     total() {
       return Number(this.responseTotal);
+    },
+    page(){
+      return this.curPage
     }
   },
   methods: {
@@ -75,7 +78,6 @@ export default {
     //计算分页input的宽度
     var divideInput = document.getElementsByClassName("ivu-page-simple-pager")[0].children[0];
     var beishu = ((this.total/10)+"").length;
-    console.log(beishu)
     divideInput.style.width = (30+(3*beishu)) + "px";
   }
 };
@@ -154,6 +156,15 @@ export default {
 .divide{
   width: 97.4%;
   overflow: hidden;
+}
+.totalNum{
+  display:inline-block;
+  line-height: 43px;
+  padding-right:10px;
+  color:#fff;
+  strong{
+    padding:6px;
+  }
 }
 </style>
 

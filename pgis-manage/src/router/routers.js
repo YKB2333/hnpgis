@@ -55,22 +55,6 @@ export default [
         
     },
     {
-        path: '/401',
-        name: 'error_401',
-        meta: {
-            hideInMenu: true
-        },
-        component: resolve => require(["@/view/error-page/401.vue"], resolve),
-    },
-    {
-        path: '/500',
-        name: 'error_500',
-        meta: {
-            hideInMenu: true
-        },
-        component: resolve => require(["@/view/error-page/500.vue"], resolve),
-    },
-    {
         path: '*',
         name: 'error_404',
         meta: {
